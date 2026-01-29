@@ -9,13 +9,38 @@
 /// our own tree.
 library;
 
-class Node<T> {
-  final T? item;
-  final List<Node<T>> children;
-  const Node({this.item, this.children = const [], this.previous});
+import 'dart:collection';
 
-  bool get isRoot => item = null;
-  bool get isLeaf => children.isEmpty;
+class Node<T> extends Equatable {
+  final T? item;
+  final Node<T>? previous;
+
+  final List<Node<T>>? connections;
+  Node._(this.item, {this.previous, this.connections});
+
+  factory Node({
+    required T item,
+    Node<T>? previous,
+    List<Node<T>>? connections,
+}) {
+    final node = Node._(item, previous: previous);
+    return node.copyWith(
+      connections: connections
+          ?.map((connection) => connection.copyWith(previous: node))
+          .toList(growable: false),
+    );
+  }
+  Node.root(T item) : this._(item);
+  bool get isLeaf => connections?.isEmpty ?? true;
+  bool get isRoot => previous == null;
+
+  Node<T> copyWith({Node<T>? previous, List<Node<T>>? connections}){
+    return Node._(
+      item,
+      previous: previous ?? this.previous,
+      connections: connections ?? this.connections,
+      );
+  }
 }
 
 /// Now that we have a tree, it would be nice to be able to search through to
@@ -41,6 +66,26 @@ class Node<T> {
 ///        Q.enqueue(w)
 /// ```
 // TODO: STUDENT TASK -> Implement breadth-first search.
+extension BFS<T> on Node<T> {
+  Node<T>? bfs({required bool Function(Node<T>) predicate}){
+    if (isRoot && predicate(this)) {
+      return this;
+    } else if (connections?.isNotEmpty ?? false) {
+      final queue = Queue<Node<T>>();
+      final explored = <Node<T>>{};
+
+      queue.add(this);
+      explored.add(this);
+
+      while(queue.isNotEmpty) {
+        final v = queue.removeFirst();
+        if(predicate(v)) {
+          return v;
+        }
+      }
+    }
+  }
+}
 
 /// Searches a tree using the depth-first search algorithm.
 ///
