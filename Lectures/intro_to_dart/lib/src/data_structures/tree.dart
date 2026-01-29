@@ -11,6 +11,8 @@ library;
 
 import 'dart:collection';
 
+import 'package:equatable/equatable.dart';
+
 class Node<T> extends Equatable {
   final T? item;
   final Node<T>? previous;
@@ -41,6 +43,11 @@ class Node<T> extends Equatable {
       connections: connections ?? this.connections,
       );
   }
+
+  @override
+  bool? get stringify => true;
+  @override
+  List<Object?> get props => [previous, item, connections];
 }
 
 /// Now that we have a tree, it would be nice to be able to search through to
@@ -82,6 +89,12 @@ extension BFS<T> on Node<T> {
         if(predicate(v)) {
           return v;
         }
+        v.connections?.forEach((connection) {
+          if(!explored.contains(connection)) {
+            explored.add(connection);
+            queue.addLast(connection.copyWith(previous: v));
+          }
+        });
       }
     }
   }
