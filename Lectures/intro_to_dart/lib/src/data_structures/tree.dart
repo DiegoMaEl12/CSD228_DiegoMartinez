@@ -97,6 +97,7 @@ extension BFS<T> on Node<T> {
         });
       }
     }
+    return null;
   }
 }
 
@@ -119,3 +120,24 @@ extension BFS<T> on Node<T> {
 ///        S.push(w)
 /// ```
 // TODO: STUDENT TASK -> Implement depth-first search.
+
+extension DFS<T> on Node<T> {
+  Node<T>? dfs({required bool Function(Node<T>) predicate}){
+    final stack = <Node<T>>[];
+    final discovered = <Node<T>>{};
+    stack.add(this);
+    while(stack.isNotEmpty){
+      final v = stack.removeLast();
+      if(predicate(v)){
+        return v;
+      }
+      if(!discovered.contains(v)){
+        discovered.add(v);
+        v.connections?.forEach((connection) {
+          stack.add(connection.copyWith(previous: v));
+        });
+      }
+    }
+    return null;
+  }
+}

@@ -4,7 +4,7 @@ import 'dart:io';
 void main() async {
   final activeDir = Directory.current;
   if(!activeDir.existsSync()){
-    throw new Exception("How tf are we running?");
+    throw Exception("How tf are we running?");
   }
   // activeDir.list().listen((entry){
   //   print(entry.path);
