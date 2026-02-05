@@ -1,0 +1,386 @@
+openapi: 3.0.3
+
+info:
+  title: "Classifieds"
+  version: "1.0.0"
+  description: "A sample open api specification for a server"
+
+servers:
+  - url: http://{host}:{port}/
+    description: A localhost server.
+    variables:
+      host:
+        enum:
+          - 'localhost'
+          - '127.0.0.1'
+          - '0.0.0.0'
+        default: '0.0.0.0'
+      port:
+        enum:
+          - '8080'
+          - '8888'
+        default: '8888'
+
+paths:
+  /users/:
+    summary: |
+      Maintains users withing the system.
+
+    delete:
+      summary: Deletes a user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  $ref: "#/components/schemas/Id"
+      responses:
+        200:
+          description: Successful request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    $ref: '#/components/schemas/Id'
+                  ids:
+                    $ref: '#/components/schemas/Ids'
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: An error state for invalid requests
+
+    patch:
+      summary: |
+        Updates the active user's account details.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - details
+                - id
+              properties:
+                id:
+                  $ref: '#/components/schemas/Id'
+                details:
+                  $ref: '#/components/schemas/UserDetails'
+      responses:
+        200:
+          description: Acceptance of change request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: An error state occurred.
+
+    post:
+      summary: Creates a user if not already present
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserDetails'
+      responses:
+        200:
+          description: Acceptance of user creation request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: An error state occurred.
+
+    get:
+      summary: Fetches a list of Users from within the system
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                id:
+                  $ref: '#/components/schemas/Id'
+                ids:
+                  $ref: '#/components/schemas/Ids'
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserList'
+          description: The successfully found user.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: An error state for invalid requests
+
+  /listings/:
+    delete:
+      description: Delete a listing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+      responses:
+        200:
+          description: Delete successful
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: An error state for invalid requests
+
+    patch:
+      description: Listings Update endpoint
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ListingsUpdate'
+      responses:
+        200:
+          description: Successfully updated listing
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClassifiedsListing"
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: An error state for invalid requests
+
+    post:
+      description: Creates a new listing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  nullable: false
+                description:
+                  type: string
+                  nullable: true
+                price:
+                  $ref: '#/components/schemas/ListingPrice'
+      responses:
+        200:
+          description: Successfully listed response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClassifiedsListing'
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: An error state for invalid requests
+
+    get:
+      summary: Fetches item with matching id.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                listingId:
+                  $ref: '#/components/schemas/Id'
+                listingIds:
+                  $ref: '#/components/schemas/Ids'
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClassifiedsPage'
+          description: The successfully found listing.
+
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: An error state for invalid requests
+
+components:
+  schemas:
+    ContactInfo:
+      description: Contact Information
+      properties:
+        email:
+          type: string
+          format: email
+          nullable: false
+        discord:
+          type: string
+
+    User:
+      description: A user to post or respond to listings
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        details:
+          $ref: '#/components/schemas/UserDetails'
+
+    UserList:
+      description: A list of users.
+      type: array
+      items:
+        $ref: '#/components/schemas/User'
+
+    UserDetails:
+      description: The details of a User.
+      type: object
+      properties:
+        username:
+          type: string
+          nullable: false
+        contact:
+          $ref: '#/components/schemas/ContactInfo'
+
+    UserDetailsUpdate:
+        description: Update payload for a user
+        type: object
+        properties:
+          username:
+            type: string
+            nullable: true
+          email:
+            type: string
+            nullable: true
+          discordUsername:
+            type: string
+            nullable: true
+
+    ClassifiedsListing:
+      type: object
+      description: A listings details.
+      required:
+        - id
+        - name
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        name:
+          description: The listing's title.
+          type: string
+        description:
+          type: string
+        created:
+          $ref: '#/components/schemas/ListingTimestamp'
+        last_modified:
+          $ref: '#/components/schemas/ListingTimestamp'
+        status:
+          $ref: '#/components/schemas/Status'
+        price:
+          $ref: '#/components/schemas/ListingPrice'
+
+    ListingsUpdate:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          nullable: false
+        price:
+          $ref: '#/components/schemas/ListingPrice'
+        status:
+          $ref: '#/components/schemas/Status'
+        title:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+
+    ClassifiedsPage:
+      type: array
+      items:
+        $ref: '#/components/schemas/ClassifiedsListing'
+      maxItems: 1000
+
+    Error:
+      type: object
+      description: A response returned when something went wrong server side.
+      required:
+        - code
+        - message
+      properties:
+        code:
+          description: The status code of the error.
+          type: integer
+          format: int32
+        message:
+          description: A description of what went wrong.
+          type: string
+
+    Status:
+      type: string
+      default: open
+      enum:
+        - pending
+        - open
+        - sold
+
+    ListingTimestamp:
+      # https://swagger.io/docs/specification/v3_0/data-models/data-types/?sbsearch=number#strings
+      type: string
+      format: date-time
+      description: |
+        The date-time notation as defined by RFC 3339, section 5.6, for example, 2017-07-21T17:32:28Z
+
+    Id:
+      type: string
+      description: The id of a listing.
+
+    Ids:
+      description: A list of listing ids.
+      type: array
+      items:
+        type: string
+
+    ListingPrice:
+      type: object
+      description: A Listing's pricing breakdown.
+      required:
+        - original
+      properties:
+        original:
+          description: The originally posted price.
+          type: number
+          minimum: 0
+        current:
+          type: number
+          description: The latest price of the listing, if there has been a update to the listing.
+          nullable: true
+          minimum: 0

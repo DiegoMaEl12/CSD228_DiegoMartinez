@@ -20,8 +20,8 @@ workspace:
 #  - "Lectures/intro_to_flutter"
 #  - "Lectures/navigation_in_flutter"
 #  - "Lectures/flutter_bloc_pattern"
-#  - "Assignments/assets/classifieds-api"
-#  - "Assignments/assets/classifieds-client"
+  - "Assignments/assets/classifieds-api"
+  - "Assignments/assets/classifieds-client"
 #  - "Assignments/assets/classifieds-server"
 
 # The following section is specific to Flutter packages and is required to be set at the primary pubspec.yaml to test
