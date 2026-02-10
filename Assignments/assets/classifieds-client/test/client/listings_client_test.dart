@@ -1,6 +1,7 @@
 import 'package:classifieds_api/classifieds_api.dart' as oas;
 import 'package:classifieds_client/models.dart';
 import 'package:classifieds_client/src/client/listings.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
 import '../oas_mocks.dart';

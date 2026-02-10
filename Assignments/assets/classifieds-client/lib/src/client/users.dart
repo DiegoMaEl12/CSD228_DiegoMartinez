@@ -30,8 +30,8 @@ final class UsersClient extends UserApi {
         .then((response) {
           if (response.data == null) {
             throw SingleUserResponse.error(
-              statusCode: response.statusCode!,
-              error: response.statusMessage,
+              statusCode: response.statusCode ?? 404,
+              error: response.statusMessage ?? 'user not found',
             );
           }
           final user = response.data?.firstOrNull;
@@ -54,7 +54,7 @@ final class UsersClient extends UserApi {
         .then((response) {
           if (response.data == null) {
             logger.fine('Failed to find users');
-            return BulkUserResponse.error(
+            throw BulkUserResponse.error(
               statusCode: response.statusCode!,
               error: response.statusMessage,
             );
