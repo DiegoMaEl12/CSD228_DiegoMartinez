@@ -58,8 +58,16 @@ RUN mkdir -p android-sdk && \
 ARG ANDROID_SDK_VERSION=36
 ENV ANDROID_HOME=/opt/android-sdk
 
-# Configure the Android SDK conmmand line tools.
-COPY cmdline-tools ${ANDROID_HOME}/cmdline-tools/latest/
+# Install Android SDK cmdline-tools (official package)
+RUN set -eux; \
+    mkdir -p "${ANDROID_HOME}/cmdline-tools"; \
+    cd /tmp; \
+    curl -fsSL -o cmdline-tools.zip \
+      https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip; \
+    unzip -q cmdline-tools.zip; \
+    rm cmdline-tools.zip; \
+    mv cmdline-tools "${ANDROID_HOME}/cmdline-tools/latest"
+
 ENV PATH="${ANDROID_HOME}/cmdline-tools/latest/bin:${PATH}"
 
 RUN echo "y" | sdkmanager --install --sdk_root="${ANDROID_HOME}" \
